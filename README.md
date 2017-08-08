@@ -1,4 +1,4 @@
-# BasicIrisExample
+# Basic Iris Example
 
 Tổng hợp những Example cơ bản khi sử dụng Iris Framework, đã bao gồm cả Design Folder Structure phù hợp với mô hình API Service
 

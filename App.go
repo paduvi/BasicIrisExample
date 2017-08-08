@@ -14,7 +14,7 @@ func main() {
 	app := iris.New()
 
 	app.OnErrorCode(iris.StatusInternalServerError, middlewares.ErrorHandler)
-	//app.Use(middlewares.Logger)
+	//app.Use(middlewares.Logger) // uncomment to see log
 
 	EquipRouter(app)
 

@@ -1,19 +1,8 @@
 package httputils
 
-import (
-	"os"
-	"strconv"
-)
-
 type Dispatcher struct {
 	// A pool of workers channels that are registered with the dispatcher
 	WorkerPool chan chan Job
-}
-
-func init() {
-	MaxWorker, _ := strconv.Atoi(os.Getenv("MaxWorker"))
-	dispatcher := NewDispatcher(MaxWorker)
-	dispatcher.Run()
 }
 
 func NewDispatcher(maxWorkers int) *Dispatcher {

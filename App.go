@@ -6,6 +6,8 @@ import (
 	"github.com/paduvi/BasicIrisExample/controllers"
 	"github.com/joho/godotenv"
 	"os"
+	"github.com/paduvi/BasicIrisExample/httputils"
+	"strconv"
 )
 
 func main() {
@@ -19,6 +21,9 @@ func main() {
 	//app.Use(middlewares.Logger) // uncomment to see log
 
 	controllers.WithRouter(app)
+
+	MaxWorker, _ := strconv.Atoi(os.Getenv("MaxWorker"))
+	httputils.NewDispatcher(MaxWorker).Run()
 
 	app.Run(iris.Addr(os.Getenv("Address")), iris.WithCharset("UTF-8"))
 }

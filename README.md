@@ -29,7 +29,7 @@ Tổng hợp những Example cơ bản khi sử dụng Iris Framework.
 - Việc Xem/Thêm/Xóa được thực hiện thông qua lời gọi HTTP Request tới Remote Service. 
 - Ở đây server đóng vai trò là 1 API Gateway, mọi job đều được điều phối thông qua Dispatcher.
 
-### TODO-LIST:
+## TODO-LIST:
 
 - Bổ sung Example Iris với Apache Thrift.
 - Bổ sung Example Redis và Long-polling Task.

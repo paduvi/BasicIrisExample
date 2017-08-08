@@ -47,7 +47,6 @@ func MessageShow(ctx context.Context) {
 		ctx.StatusCode(iris.StatusInternalServerError)
 		return
 	}
-	ctx.Text(result.Data.(string))
 	var message Message
 	json.Unmarshal(result.Data.([]byte), &message)
 	ctx.JSON(message)

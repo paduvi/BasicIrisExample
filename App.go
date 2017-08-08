@@ -4,7 +4,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/paduvi/BasicIrisExample/middlewares"
 	. "github.com/paduvi/BasicIrisExample/routes"
-	. "github.com/paduvi/BasicIrisExample/utils"
+	. "github.com/paduvi/BasicIrisExample/httputils"
 	"github.com/paduvi/BasicIrisExample/config"
 )
 

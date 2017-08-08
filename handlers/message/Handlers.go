@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"github.com/kataras/iris/context"
 	. "github.com/paduvi/BasicIrisExample/models"
-	. "github.com/paduvi/BasicIrisExample/utils"
+	. "github.com/paduvi/BasicIrisExample/httputils"
 	TodoAction "github.com/paduvi/BasicIrisExample/actions/todo"
+	MessageAction "github.com/paduvi/BasicIrisExample/actions/message"
 	"io/ioutil"
 	"io"
 	"github.com/kataras/iris"
@@ -78,7 +79,7 @@ func TodoDelete(ctx context.Context) {
 func MessagePing(ctx context.Context) {
 
 	done := make(chan Result)
-	work := Job{Payload: struct{}{}, Result: done}
+	work := Job{Payload: struct{}{}, Result: done, Handle: MessageAction.PingMessage}
 
 	// Push the work onto the queue.
 	JobQueue <- work

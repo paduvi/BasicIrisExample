@@ -6,7 +6,7 @@ import (
 	"github.com/paduvi/BasicIrisExample/config"
 )
 
-func PingMessage(client *fasthttp.Client, done chan Result) {
+func PingMessage(client *fasthttp.Client, done chan Result, payload interface{}) {
 	defer func() {
 		close(done)
 	}()

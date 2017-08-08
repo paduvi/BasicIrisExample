@@ -1,7 +1,6 @@
-package utils
+package httputils
 
 import (
-	MessageAction "github.com/paduvi/BasicIrisExample/actions/message"
 	"github.com/valyala/fasthttp"
 	"net"
 	"time"
@@ -41,7 +40,7 @@ func (w Worker) Start() {
 
 			select {
 			case job := <-w.JobChannel:
-				MessageAction.PingMessage(w.HttpClient, job.Result)
+				job.Handle(w.HttpClient, job.Result, job.Payload)
 
 			case <-w.quit:
 				// we have received a signal to stop

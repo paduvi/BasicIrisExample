@@ -10,25 +10,26 @@ Tổng hợp những Example cơ bản khi sử dụng Iris Framework.
 - Sử dụng [`Apache Thrift`](https://thrift.apache.org/tutorial/go) để triển khai RPC.
 - Source code của Mock Remote Service: https://github.com/paduvi/MockRemoteService
 
-## Index Controller:
+### Index Controller:
 
 - Hello World làm quen với Iris Framework.
 - Route `"/ping"`: đóng vai trò API Gateway, thực hiện HTTP Request Ping tới Remote Service
 
-## Todo Controller:
+### Todo Controller:
 
 - API ứng dụng Todo List đơn giản
 - Response trả về dưới dạng JSON. 
 - Việc Xem/Thêm/Xóa được thực hiện thông qua Database (trong khuôn khổ thử nghiệm Example Iris cơ bản nên sử dụng tạm 1 Mock Repo thay vì dùng DB thật)
 - Không sử dụng Dispatcher. Nên áp dụng Dispatcher giống như Message Controller để tối ưu hiệu năng, vì bản chất việc gửi command tới database cũng là 1 kết nối TCP
 
-## Message Controller:
+### Message Controller:
 
 - API ứng dụng Message List đơn giản
 - Response trả về dưới dạng JSON.
 - Việc Xem/Thêm/Xóa được thực hiện thông qua lời gọi HTTP Request tới Remote Service. 
 - Ở đây server đóng vai trò là 1 API Gateway, mọi job đều được điều phối thông qua Dispatcher.
 
-## Đang tiếp tục:
+### TODO-LIST:
 
-- Sử dụng Iris làm API Gateway và sử dụng Apache Thrift để gọi tới Service.
+- Bổ sung Example Iris với Apache Thrift.
+- Bổ sung Example Redis và Long-polling Task.

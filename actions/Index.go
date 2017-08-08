@@ -2,8 +2,8 @@ package actions
 
 import (
 	"github.com/valyala/fasthttp"
-	"github.com/paduvi/BasicIrisExample/config"
 	. "github.com/paduvi/BasicIrisExample/models"
+	"os"
 )
 
 func PingRemote(client *fasthttp.Client, done chan Result, payload interface{}) {
@@ -11,7 +11,7 @@ func PingRemote(client *fasthttp.Client, done chan Result, payload interface{}) 
 		close(done)
 	}()
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(config.RemoteUrl)
+	req.SetRequestURI(os.Getenv("RemoteUrl"))
 
 	resp := fasthttp.AcquireResponse()
 

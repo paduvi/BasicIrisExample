@@ -2,10 +2,10 @@ package actions
 
 import (
 	"github.com/valyala/fasthttp"
-	"github.com/paduvi/BasicIrisExample/config"
 	. "github.com/paduvi/BasicIrisExample/models"
 	"strconv"
 	"encoding/json"
+	"os"
 )
 
 func ListMessage(client *fasthttp.Client, done chan Result, payload interface{}) {
@@ -13,7 +13,7 @@ func ListMessage(client *fasthttp.Client, done chan Result, payload interface{})
 		close(done)
 	}()
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(config.RemoteUrl + "/messages")
+	req.SetRequestURI(os.Getenv("RemoteUrl") + "/messages")
 
 	resp := fasthttp.AcquireResponse()
 
@@ -31,7 +31,7 @@ func FindMessage(client *fasthttp.Client, done chan Result, payload interface{})
 	}()
 	messageId := payload.(Message).Id
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(config.RemoteUrl + "/messages/" + strconv.Itoa(messageId))
+	req.SetRequestURI(os.Getenv("RemoteUrl") + "/messages/" + strconv.Itoa(messageId))
 
 	resp := fasthttp.AcquireResponse()
 
@@ -48,7 +48,7 @@ func CreateMessage(client *fasthttp.Client, done chan Result, payload interface{
 		close(done)
 	}()
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(config.RemoteUrl + "/messages")
+	req.SetRequestURI(os.Getenv("RemoteUrl") + "/messages")
 	req.Header.SetMethod("POST")
 	body, err := json.Marshal(payload)
 
@@ -74,7 +74,7 @@ func DestroyMessage(client *fasthttp.Client, done chan Result, payload interface
 	}()
 	messageId := payload.(Message).Id
 	req := fasthttp.AcquireRequest()
-	req.SetRequestURI(config.RemoteUrl + "/messages/" + strconv.Itoa(messageId))
+	req.SetRequestURI(os.Getenv("RemoteUrl") + "/messages/" + strconv.Itoa(messageId))
 	req.Header.SetMethod("DELETE")
 
 	resp := fasthttp.AcquireResponse()

@@ -1,6 +1,9 @@
 package httputils
 
-import "github.com/paduvi/BasicIrisExample/config"
+import (
+	"os"
+	"strconv"
+)
 
 type Dispatcher struct {
 	// A pool of workers channels that are registered with the dispatcher
@@ -8,7 +11,8 @@ type Dispatcher struct {
 }
 
 func init() {
-	dispatcher := NewDispatcher(config.MaxWorker)
+	MaxWorker, _ := strconv.Atoi(os.Getenv("MaxWorker"))
+	dispatcher := NewDispatcher(MaxWorker)
 	dispatcher.Run()
 }
 

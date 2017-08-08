@@ -4,7 +4,8 @@ import (
 	"github.com/valyala/fasthttp"
 	"net"
 	"time"
-	"github.com/paduvi/BasicIrisExample/config"
+	"strconv"
+	"os"
 )
 
 // Worker represents the worker that executes the job
@@ -21,9 +22,11 @@ func NewWorker(workerPool chan chan Job) Worker {
 		JobChannel: make(chan Job),
 		HttpClient: &fasthttp.Client{
 			Dial: func(addr string) (net.Conn, error) {
-				var dialer = net.Dialer{
-					Timeout:   time.Duration(config.RequestTimeOut) * time.Second,
-					KeepAlive: time.Duration(config.KeepAlive) * time.Second,
+				RequestTimeOut, _ := strconv.Atoi(os.Getenv("RequestTimeOut"))
+				KeepAliveDuration, _ := strconv.Atoi(os.Getenv("KeepAliveDuration"))
+				dialer := net.Dialer{
+					Timeout:   time.Duration(RequestTimeOut) * time.Second,
+					KeepAlive: time.Duration(KeepAliveDuration) * time.Second,
 				}
 				return dialer.Dial("tcp", addr)
 			},

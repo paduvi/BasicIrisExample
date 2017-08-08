@@ -3,11 +3,10 @@ package todo
 import (
 	"github.com/kataras/iris/core/router"
 	. "github.com/paduvi/BasicIrisExample/models"
-	. "github.com/paduvi/BasicIrisExample/handlers/message"
 )
 
-func EquipMessageRouter(app router.Party) {
-	party := app.Party("/messages")
+func EquipTodoRouter(app router.Party) {
+	party := app.Party("/todos")
 
 	for _, route := range routes {
 		party.Handle(route.Method, route.Pattern, route.HandlerFunc)
@@ -16,33 +15,27 @@ func EquipMessageRouter(app router.Party) {
 
 var routes = Routes{
 	Route{
-		"MessageIndex",
+		"TodoIndex",
 		"GET",
 		"/",
 		TodoIndex,
 	},
 	Route{
-		"MessagePing",
+		"TodoShow",
 		"GET",
-		"/ping",
-		MessagePing,
-	},
-	Route{
-		"MessageShow",
-		"GET",
-		"/{messageId:int min(1)}",
+		"/{todoId:int min(1)}",
 		TodoShow,
 	},
 	Route{
-		"MessageCreate",
+		"TodoCreate",
 		"POST",
 		"/",
 		TodoCreate,
 	},
 	Route{
-		"MessageDelete",
+		"TodoDelete",
 		"DELETE",
-		"/{messageId:int min(1)}",
+		"/{todoId:int min(1)}",
 		TodoDelete,
 	},
 }

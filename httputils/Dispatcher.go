@@ -1,8 +1,15 @@
 package httputils
 
+import "github.com/paduvi/BasicIrisExample/config"
+
 type Dispatcher struct {
 	// A pool of workers channels that are registered with the dispatcher
 	WorkerPool chan chan Job
+}
+
+func init() {
+	dispatcher := NewDispatcher(config.MaxWorker)
+	dispatcher.Run()
 }
 
 func NewDispatcher(maxWorkers int) *Dispatcher {

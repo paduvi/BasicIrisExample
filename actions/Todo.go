@@ -1,4 +1,4 @@
-package todo
+package actions
 
 import "github.com/paduvi/BasicIrisExample/mockrepo"
 import . "github.com/paduvi/BasicIrisExample/models"

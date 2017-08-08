@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/kataras/iris/context"
 	. "github.com/paduvi/BasicIrisExample/models"
-	TodoAction "github.com/paduvi/BasicIrisExample/actions/todo"
+	"github.com/paduvi/BasicIrisExample/actions"
 
 	"io/ioutil"
 	"io"
@@ -15,7 +15,7 @@ func TodoIndex(ctx context.Context) {
 	ctx.ContentType("application/json")
 	ctx.StatusCode(iris.StatusOK)
 	done := make(chan Todos)
-	go TodoAction.ListTodo(done)
+	go actions.ListTodo(done)
 
 	if _, err := ctx.JSON(<-done); err != nil {
 		panic(err)
@@ -31,7 +31,7 @@ func TodoShow(ctx context.Context) {
 		return
 	}
 	done := make(chan Todo)
-	go TodoAction.FindTodo(todoId, done)
+	go actions.FindTodo(todoId, done)
 	if _, err := ctx.JSON(<-done); err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func TodoCreate(ctx context.Context) {
 	}
 
 	done := make(chan Todo)
-	go TodoAction.CreateTodo(todo, done)
+	go actions.CreateTodo(todo, done)
 	ctx.ContentType("application/json")
 	ctx.StatusCode(iris.StatusCreated)
 	if _, err := ctx.JSON(<-done); err != nil {
@@ -72,7 +72,7 @@ func TodoDelete(ctx context.Context) {
 		return
 	}
 	done := make(chan error)
-	go TodoAction.DestroyTodo(todoId, done)
+	go actions.DestroyTodo(todoId, done)
 	if err := <-done; err != nil {
 		panic(err)
 	}

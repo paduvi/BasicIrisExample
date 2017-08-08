@@ -2,7 +2,6 @@ package todo
 
 import (
 	"github.com/kataras/iris/core/router"
-	. "github.com/paduvi/BasicIrisExample/handlers/index"
 	. "github.com/paduvi/BasicIrisExample/models"
 )
 
@@ -20,6 +19,12 @@ var routes = Routes{
 		"GET",
 		"/",
 		Index,
+	},
+	Route{
+		"PingRemote",
+		"GET",
+		"/ping",
+		PingRemote,
 	},
 	Route{
 		"SubIndex",

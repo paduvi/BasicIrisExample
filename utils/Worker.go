@@ -41,7 +41,7 @@ func (w Worker) Start() {
 
 			select {
 			case job := <-w.JobChannel:
-				go MessageAction.PingMessage(w.HttpClient, job.Result)
+				MessageAction.PingMessage(w.HttpClient, job.Result)
 
 			case <-w.quit:
 				// we have received a signal to stop

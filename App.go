@@ -5,6 +5,7 @@ import (
 	"github.com/paduvi/BasicIrisExample/middlewares"
 	"github.com/paduvi/BasicIrisExample/controllers"
 	"github.com/joho/godotenv"
+	"os"
 )
 
 func main() {
@@ -19,6 +20,5 @@ func main() {
 
 	controllers.WithRouter(app)
 
-	// Listen for incoming HTTP/1.x & HTTP/2 clients on localhost port 8080.
-	app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"))
+	app.Run(iris.Addr(os.Getenv("Address")), iris.WithCharset("UTF-8"))
 }

@@ -7,21 +7,16 @@ import (
 	"os"
 	"github.com/paduvi/BasicIrisExample/httputils"
 	"strconv"
-	"github.com/joho/godotenv"
+	_ "github.com/jpfuentes2/go-env/autoload"
 )
-
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		panic("Error loading .env file")
-	}
-}
 
 func main() {
 	app := iris.New()
 
 	app.OnErrorCode(iris.StatusInternalServerError, middlewares.ErrorHandler)
-	//app.Use(middlewares.Logger) // uncomment to see log
+	if os.Getenv("LogLevel") == "DEBUG" {
+		app.Use(middlewares.Logger)
+	}
 
 	controllers.WithRouter(app)
 

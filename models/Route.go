@@ -5,7 +5,6 @@ import (
 )
 
 type Route struct {
-	Name        string
 	Method      string
 	Pattern     string
 	HandlerFunc context.Handler

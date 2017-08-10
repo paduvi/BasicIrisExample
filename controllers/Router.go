@@ -2,15 +2,17 @@ package controllers
 
 import (
 	"github.com/kataras/iris"
-	. "github.com/paduvi/BasicIrisExample/controllers/todo"
-	. "github.com/paduvi/BasicIrisExample/controllers/index"
-	. "github.com/paduvi/BasicIrisExample/controllers/message"
+	TodoController "github.com/paduvi/BasicIrisExample/controllers/todo"
+	IndexController "github.com/paduvi/BasicIrisExample/controllers/index"
+	MessageController "github.com/paduvi/BasicIrisExample/controllers/message"
+	HistoryController "github.com/paduvi/BasicIrisExample/controllers/history"
 )
 
 func WithRouter(app *iris.Application) {
 	mainRouter := app.Party("/")
 
-	EquipIndexRouter(mainRouter)
-	EquipTodoRouter(mainRouter)
-	EquipMessageRouter(mainRouter)
+	TodoController.EquipRouter(mainRouter)
+	IndexController.EquipRouter(mainRouter)
+	MessageController.EquipRouter(mainRouter)
+	HistoryController.EquipRouter(mainRouter)
 }

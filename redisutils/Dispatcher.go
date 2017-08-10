@@ -1,0 +1,54 @@
+package redisutils
+
+import (
+	"time"
+	"github.com/garyburd/redigo/redis"
+	"strconv"
+	"os"
+)
+
+type Dispatcher struct {
+	// A pool of workers channels that are registered with the dispatcher
+	WorkerPool chan chan Job
+}
+
+func NewDispatcher(maxWorkers int) *Dispatcher {
+	pool := make(chan chan Job, maxWorkers)
+	return &Dispatcher{WorkerPool: pool}
+}
+
+func (d *Dispatcher) Run() {
+	RedisIdleTime, _ := strconv.Atoi(os.Getenv("RedisIdleTime"))
+	MaxRedisIdleConnections, _ := strconv.Atoi(os.Getenv("MaxRedisIdleConnections"))
+
+	redisPool := redis.Pool{
+		MaxIdle:     MaxRedisIdleConnections,
+		IdleTimeout: time.Duration(RedisIdleTime) * time.Second,
+		Dial:        func() (redis.Conn, error) { return redis.Dial("tcp", os.Getenv("RedisAddress")) },
+	}
+
+	// starting n number of workers
+	for i := 0; i < cap(d.WorkerPool); i++ {
+		worker := NewWorker(d.WorkerPool, redisPool)
+		worker.Start()
+	}
+
+	go d.dispatch()
+}
+
+func (d *Dispatcher) dispatch() {
+	for {
+		select {
+		case job := <-JobQueue:
+			// a job request has been received
+			go func(job Job) {
+				// try to obtain a worker job channel that is available.
+				// this will block until a worker is idle
+				jobChannel := <-d.WorkerPool
+
+				// dispatch the job to the worker job channel
+				jobChannel <- job
+			}(job)
+		}
+	}
+}

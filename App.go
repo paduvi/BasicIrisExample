@@ -8,6 +8,7 @@ import (
 	"github.com/paduvi/BasicIrisExample/httputils"
 	"strconv"
 	_ "github.com/jpfuentes2/go-env/autoload"
+	"github.com/paduvi/BasicIrisExample/redisutils"
 )
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 
 	MaxWorker, _ := strconv.Atoi(os.Getenv("MaxWorker"))
 	httputils.NewDispatcher(MaxWorker).Run()
+	redisutils.NewDispatcher(MaxWorker).Run()
 
 	app.Run(iris.Addr(os.Getenv("Address")), iris.WithCharset("UTF-8"))
 }

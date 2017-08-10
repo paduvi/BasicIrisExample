@@ -5,7 +5,7 @@ import (
 	. "github.com/paduvi/BasicIrisExample/models"
 )
 
-func EquipIndexRouter(app router.Party) {
+func EquipRouter(app router.Party) {
 	party := app.Party("/")
 
 	for _, route := range routes {
@@ -15,19 +15,16 @@ func EquipIndexRouter(app router.Party) {
 
 var routes = Routes{
 	Route{
-		"Index",
 		"GET",
 		"/",
 		Index,
 	},
 	Route{
-		"PingRemote",
 		"GET",
 		"/ping",
 		PingRemote,
 	},
 	Route{
-		"SubIndex",
 		"GET",
 		"/{name}",
 		SubIndex,

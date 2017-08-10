@@ -21,7 +21,7 @@ Tổng hợp những Example cơ bản khi sử dụng Iris Framework.
 - API ứng dụng Todo List đơn giản
 - Response trả về dưới dạng JSON. 
 - Việc Xem/Thêm/Xóa được thực hiện thông qua Database (trong khuôn khổ thử nghiệm Example Iris cơ bản nên sử dụng tạm 1 Mock Repo thay vì dùng DB thật)
-- Không sử dụng Dispatcher. Nên áp dụng Dispatcher giống như Message Controller để tối ưu hiệu năng, vì bản chất việc gửi command tới database cũng là 1 kết nối TCP
+- Trong ví dụ chưa có sử dụng Dispatcher. Nên áp dụng Dispatcher giống như Message Controller để tối ưu hiệu năng, vì bản chất việc gửi command tới database cũng là 1 kết nối TCP
 
 ### Message Controller:
 

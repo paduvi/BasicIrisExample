@@ -21,7 +21,28 @@ func ListViewer(ctx context.Context) {
 		ctx.Redirect(ctx.Request().URL.Path)
 		return
 	}
-	ctx.Text(strconv.Itoa(q))
+
+	done := make(chan models.Result)
+	work := redisutils.Job{
+		Payload: q,
+		Result:  done,
+		Handle:  actions.ListViewer,
+	}
+
+	// Push the work onto the queue.
+	redisutils.JobQueue <- work
+	result := <-done
+	if result.Error != nil {
+		ctx.Values().Set("error", result.Error.Error())
+		ctx.StatusCode(iris.StatusInternalServerError)
+		return
+	}
+	data := []int{}
+	for _, element := range result.Data.([]interface{}) {
+		n, _ := strconv.Atoi(string(element.([]byte)))
+		data = append(data, n)
+	}
+	ctx.JSON(data)
 }
 
 func ListViewerByItemId(ctx context.Context) {
@@ -67,7 +88,7 @@ func ViewItemByUserId(ctx context.Context) {
 	}
 	done := make(chan models.Result)
 	work := redisutils.Job{
-		Payload: actions.ViewItemByUserIdPayload{UserId: userId, ItemId: itemId},
+		Payload: actions.UserItemPair{UserId: userId, ItemId: itemId},
 		Result:  done,
 		Handle:  actions.ViewItemByUserId,
 	}
@@ -80,7 +101,7 @@ func ViewItemByUserId(ctx context.Context) {
 		ctx.StatusCode(iris.StatusInternalServerError)
 		return
 	}
-	ctx.JSON(result.Data)
+	ctx.Text("OK")
 }
 
 func ShowUserHistory(ctx context.Context) {

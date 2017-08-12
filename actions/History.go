@@ -8,15 +8,29 @@ import (
 	"github.com/paduvi/BasicIrisExample/redisutils"
 )
 
-type ViewItemByUserIdPayload struct {
+type UserItemPair struct {
 	ItemId int
 	UserId int
 }
 
-type RemoveOldHistoryPayload struct {
+type UserItemPairWithExpiredTime struct {
 	UserId      int
 	ItemId      int
 	ExpiredTime time.Time
+}
+
+func ListViewer(redisPool redis.Pool, done chan models.Result, payload interface{})  {
+	conn := redisPool.Get()
+	defer conn.Close()
+
+	q := payload.(int)
+	reply, err:=conn.Do("ZRANGEBYSCORE", "user:list", q, "+inf")
+
+	if err != nil {
+		done <- models.Result{Error: err}
+		return
+	}
+	done <- models.Result{Error: nil, Data: reply}
 }
 
 func ListViewerByItemId(redisPool redis.Pool, done chan models.Result, payload interface{}) {
@@ -38,23 +52,23 @@ func ViewItemByUserId(redisPool redis.Pool, done chan models.Result, payload int
 	conn := redisPool.Get()
 	defer conn.Close()
 
-	userId := payload.(ViewItemByUserIdPayload).UserId
-	itemId := payload.(ViewItemByUserIdPayload).ItemId
+	userId := payload.(UserItemPair).UserId
+	itemId := payload.(UserItemPair).ItemId
 
-	conn.Send("MULTI")
-	conn.Send("ZADD", "user:"+strconv.Itoa(userId), time.Now().Unix(), itemId)
-	conn.Send("EXPIRE", "user:"+strconv.Itoa(userId), 120)
-	conn.Send("SETEX", "user:item:"+strconv.Itoa(userId)+":"+strconv.Itoa(itemId), 360, time.Now().Unix())
+	script := redis.NewScript(2, redisutils.ViewItemByUserIdScript)
+	_, err := script.Do(conn,
+		"user:history:"+strconv.Itoa(userId), "user:item:"+strconv.Itoa(userId)+":"+strconv.Itoa(itemId), // keys
+		userId, itemId, time.Now().Unix(),                                                                // argv
+	)
 
-	replies, err := conn.Do("EXEC")
 	if err != nil {
 		done <- models.Result{Error: err}
 		return
 	}
-	done <- models.Result{Error: nil, Data: replies}
+	done <- models.Result{Error: nil}
 
 	work := redisutils.Job{
-		Payload: RemoveOldHistoryPayload{UserId: userId, ItemId: itemId, ExpiredTime: time.Now().Add(time.Second * time.Duration(120))},
+		Payload: UserItemPairWithExpiredTime{UserId: userId, ItemId: itemId, ExpiredTime: time.Now().Add(time.Second * time.Duration(120))},
 		Handle:  RemoveOldHistory,
 	}
 	redisutils.JobQueue <- work
@@ -65,7 +79,7 @@ func ShowUserHistory(redisPool redis.Pool, done chan models.Result, payload inte
 	defer conn.Close()
 
 	userId := payload.(int)
-	reply, err := conn.Do("ZRANGE", "user:"+strconv.Itoa(userId), 0, -1, "WITHSCORES")
+	reply, err := conn.Do("ZRANGE", "user:history:"+strconv.Itoa(userId), 0, -1, "WITHSCORES")
 
 	if err != nil {
 		done <- models.Result{Error: err}
@@ -76,7 +90,7 @@ func ShowUserHistory(redisPool redis.Pool, done chan models.Result, payload inte
 }
 
 func RemoveOldHistory(redisPool redis.Pool, done chan models.Result, payload interface{}) {
-	expiredTime := payload.(RemoveOldHistoryPayload).ExpiredTime
+	expiredTime := payload.(UserItemPairWithExpiredTime).ExpiredTime
 
 	if expiredTime.After(time.Now()) {
 		go func() {
@@ -91,11 +105,21 @@ func RemoveOldHistory(redisPool redis.Pool, done chan models.Result, payload int
 	conn := redisPool.Get()
 	defer conn.Close()
 
-	userId := payload.(RemoveOldHistoryPayload).UserId
-	itemId := payload.(RemoveOldHistoryPayload).ItemId
+	userId := payload.(UserItemPairWithExpiredTime).UserId
+	itemId := payload.(UserItemPairWithExpiredTime).ItemId
 
 	conn.Send("MULTI")
-	conn.Send("ZREM", "user:"+strconv.Itoa(userId), itemId)
+	conn.Send("ZREM", "user:history:"+strconv.Itoa(userId), itemId)
 	conn.Send("DEL", "user:item:"+strconv.Itoa(userId)+":"+strconv.Itoa(itemId))
-	conn.Do("EXEC")
+	conn.Send("ZINCRBY", "user:list", -1, userId)
+	_, err := conn.Do("EXEC")
+	if err != nil {
+		go func() {
+			work := redisutils.Job{
+				Payload: payload,
+				Handle:  RemoveOldHistory,
+			}
+			redisutils.JobQueue <- work
+		}()
+	}
 }

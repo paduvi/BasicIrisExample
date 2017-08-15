@@ -1,4 +1,4 @@
-package redisutils
+package cronjob
 
 import (
 	"time"

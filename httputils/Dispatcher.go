@@ -1,8 +1,19 @@
 package httputils
 
+import (
+	"strconv"
+	"os"
+	_ "github.com/jpfuentes2/go-env/autoload"
+)
+
 type Dispatcher struct {
 	// A pool of workers channels that are registered with the dispatcher
 	WorkerPool chan chan Job
+}
+
+func init() {
+	MaxWorker, _ := strconv.Atoi(os.Getenv("MaxWorker"))
+	NewDispatcher(MaxWorker).Run()
 }
 
 func NewDispatcher(maxWorkers int) *Dispatcher {

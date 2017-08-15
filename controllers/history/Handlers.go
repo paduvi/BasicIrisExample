@@ -67,7 +67,7 @@ func ListViewerByItemId(ctx context.Context) {
 		return
 	}
 	data := []int{}
-	regex, err := regexp.Compile(":\\d+:")
+	regex, _ := regexp.Compile(":\\d+:")
 	for _, element := range result.Data.([]interface{}) {
 		userId, _ := strconv.Atoi(strings.Trim(string(regex.Find(element.([]byte))), ":"))
 		data = append(data, userId)

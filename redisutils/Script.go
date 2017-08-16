@@ -5,13 +5,12 @@ const ViewItemByUserIdScript string =`
 	if exist == 1 then
 		redis.call("ZINCRBY", "user:list", 1, ARGV[1])
 	end
-	redis.call("EXPIRE", KEYS[1], 120)
-	redis.call("SETEX", KEYS[2], 360, ARGV[3])
+	redis.call("EXPIRE", KEYS[1], 259200)
+	redis.call("SETEX", KEYS[2], 259200, ARGV[3])
 	`
 
 const RemoveOldHistoryScript string = `
 	redis.call("ZREM", KEYS[1], ARGV[2])
-	redis.call("DEL", KEYS[2])
 	local len = redis.call("ZCARD", KEYS[1])
 	if len == 0 then
 		redis.call("DEL", KEYS[1])

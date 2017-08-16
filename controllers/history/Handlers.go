@@ -126,12 +126,5 @@ func ShowUserHistory(ctx context.Context) {
 		return
 	}
 
-	list := result.Data.([]interface{})
-	histories := map[int]time.Time{}
-	for i := 0; i < len(list); i += 2 {
-		itemId, _ := strconv.Atoi(string(list[i].([]byte)))
-		timeStamp, _ := strconv.ParseInt(string(list[i+1].([]byte)), 10, 64)
-		histories[itemId] = time.Unix(timeStamp, 0)
-	}
-	ctx.JSON(models.User{Id: userId, Histories: histories})
+	ctx.JSON(models.User{Id: userId, Histories: result.Data.(map[int]time.Time)})
 }

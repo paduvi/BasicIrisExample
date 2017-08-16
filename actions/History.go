@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 	"github.com/paduvi/BasicIrisExample/redisutils"
-	"github.com/paduvi/BasicIrisExample/cronjob"
 )
 
 type UserItemPair struct {
@@ -61,14 +60,6 @@ func ViewItemByUserId(redisPool redis.Pool, done chan models.Result, payload int
 		return
 	}
 	done <- models.Result{Error: nil}
-
-	go func() {
-		work := cronjob.Job{
-			Payload: cronjob.UserItemPairWithExpiredTime{UserId: userId, ItemId: itemId, ExpiredTime: time.Now().Add(time.Second * time.Duration(120))},
-			Handle:  cronjob.RemoveOldHistory,
-		}
-		cronjob.JobQueue <- work
-	}()
 }
 
 func ShowUserHistory(redisPool redis.Pool, done chan models.Result, payload interface{}) {
@@ -83,5 +74,29 @@ func ShowUserHistory(redisPool redis.Pool, done chan models.Result, payload inte
 		return
 	}
 
-	done <- models.Result{Error: nil, Data: reply}
+	minTime := time.Now().Add(time.Duration(-3*60*24) * time.Minute).Unix()
+
+	list := reply.([]interface{})
+	histories := map[int]time.Time{}
+	for i := 0; i < len(list); i += 2 {
+		itemId, _ := strconv.Atoi(string(list[i].([]byte)))
+		timeStamp, _ := strconv.ParseInt(string(list[i+1].([]byte)), 10, 64)
+
+		if timeStamp > minTime {
+			histories[itemId] = time.Unix(timeStamp, 0)
+			continue
+		}
+		// Remove Old History
+		go func() {
+			work := redisutils.Job{
+				Payload: UserItemPair{
+					UserId: userId,
+					ItemId: itemId,
+				},
+				Handle: redisutils.RemoveOldHistory,
+			}
+			redisutils.JobQueue <- work
+		}()
+	}
+	done <- models.Result{Error: nil, Data: histories}
 }
